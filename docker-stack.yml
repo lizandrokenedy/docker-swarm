@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+    nginx:
+        image: nginx:latest
+        ports:
+           - "80:80"
+#        network:
+#           - backend
+#        volumes:
+#           - /root/html:/usr/share/nginx/html
+        deploy:
+#           mode: global
+           replicas: 3
+           update_config:
+              parallelism: 3
+              delay: 5s
+           restart_policy:
+              condition: on-failure
+              delay: 5s
+              max_attempts: 3
+           placement:
+              constraints: 
+                 - node.role == manager
+              preferences:
+                 - spread: node.labels.ssd
+           resources:
+              limits:
+                  cpus: '1'
+                  memory: 1G
+              reservations:
+                  cpus: '0.5'
+                  memory: 500M
