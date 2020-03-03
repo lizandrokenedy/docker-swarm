@@ -1,4 +1,4 @@
-#Tutorial Docker Swarm 
+Tutorial Docker Swarm 
 
  
 
@@ -58,45 +58,45 @@ Comando para exibir os serviços do stack: docker stack services <nome do stack>
 
 Exemplo de arquivo docker-stack.yml: 
 
-version: “3” 
+    version: “3” 
 
-services: 
+    services: 
 
-    redis: 
+        redis: 
 
-        image: redis:alpine 
+             image: redis:alpine 
 
-        ports: 
+             ports: 
 
-            - “6379” 
+                - “6379” 
 
-        networks: 
+             networks: 
 
-           - frontend 
+                - frontend 
 
-        deploy: 
+            deploy: 
 
-            replicas: 1 
+                replicas: 1 
 
-            update_config: 
+                update_config: 
 
-                parallelism: 2 # Define quantos containers poderão ser atualizados em paralelo, por padrão é 1 
+                    parallelism: 2 # Define quantos containers poderão ser atualizados em paralelo, por padrão é 1 
 
-                delay: 10s # Define um intervalo entre a atualização de um grupo de containers e o próximo grupo 
+                    delay: 10s # Define um intervalo entre a atualização de um grupo de containers e o próximo grupo 
 
-            restart_policy: 
+                restart_policy: 
 
-                condition: on-failure # Reinicia o serviço automaticamente em caso de falha 
+                    condition: on-failure # Reinicia o serviço automaticamente em caso de falha 
 
-                delay: 10s 
+                    delay: 10s 
 
-                max_attempts: 3 # Em caso de falha de um container, este parâmetro irá informar a quantidade de tentativas que o docker fará para restaurar o serviço 
+                    max_attempts: 3 # Em caso de falha de um container, este parâmetro irá informar a quantidade de tentativas que o docker fará para restaurar o serviço 
 
-                window: 120s # Quanto tempo esperar até decidir se uma reinicialização foi bem sucedida. O padrão é imediatamente. 
+                    window: 120s # Quanto tempo esperar até decidir se uma reinicialização foi bem sucedida. O padrão é imediatamente. 
 
-            placement: 
+                placement: 
 
-                constraints: [node.role == manager]  # Restrição o serviço só poderá rodar em nós do tipo manager 
+                    constraints: [node.role == manager]  # Restrição o serviço só poderá rodar em nós do tipo manager 
 
            
 
@@ -142,41 +142,41 @@ Para utilizar secrets em arquivos .yml, é necessária a versão >= 3.1 no arqui
 
 Para utilizar um secret em um arquivo docker-stack.yml é necessária a versão >= 3.1 no arquivo: 
 
-version: “3.5” 
+    version: “3.5” 
 
-services: 
+    services: 
 
-    psql: 
+        psql: 
 
-        image: postgres 
+            image: postgres 
 
-        secrets:  
+            secrets:  
 
-          - psql-user 
+              - psql-user 
 
-          - psql-pass 
+              - psql-pass 
 
-        environment: 
+            environment: 
 
-            POSTGRES_PASSWORD_FILE: /run/secrets/psql-pass 
+                POSTGRES_PASSWORD_FILE: /run/secrets/psql-pass 
 
-            POSTGRES_USER_FILE: /run/secrets/psql-user 
+                POSTGRES_USER_FILE: /run/secrets/psql-user 
 
-        secrets: 
+            secrets: 
 
-            psql-user: 
+                psql-user: 
 
-                external: 
+                    external: 
 
-                    name: psql-another-name 
+                        name: psql-another-name 
 
-            psql-pass: 
+                psql-pass: 
 
-                file: ./psql-pass.txt  
+                    file: ./psql-pass.txt  
 
-            psql-db: 
+                psql-db: 
 
-                external: true 
+                    external: true 
 
  
 
@@ -216,19 +216,19 @@ Por padrão, o swarm distribui as tarefas de um serviço entre os nós
 
 Existem algumas maneiras de controlar o posicionamento dos containers: 
 
-1 – Utilizar os labels rótuno em nós + restrições de serviço (<key>=<value>) 
+  1 – Utilizar os labels rótuno em nós + restrições de serviço (<key>=<value>) 
 
-2 – Modos de serviço (replicated | global) 
+  2 – Modos de serviço (replicated | global) 
 
-3 – Preferências de posicionamento versão 17.04+ 
+  3 – Preferências de posicionamento versão 17.04+ 
 
-4 – Disponibilidades de nós (active | pause | drain) 
+  4 – Disponibilidades de nós (active | pause | drain) 
 
-5 – Requisitos de recursos (CPU | memória) 
+  5 – Requisitos de recursos (CPU | memória) 
 
  
 
-#Restrições de serviços (Service Constraints) 
+Restrições de serviços (Service Constraints) 
 
 Posicionamento baseado em labels internos ou personalizados (“node.labels.” ou “engine.labels.”) 
 
@@ -266,25 +266,25 @@ docker service create --name pg1 --constraint node.labels.ssd==true --replicas 2
 
 Restrições de serviços em arquivos stacks: 
 
-version: “3.1” 
+    version: “3.1” 
 
-services: 
+    services: 
 
-     mypg: 
+        mypg: 
 
-         image: postgres:10 
+            image: postgres:10 
 
-         deploy: 
+            deploy: 
 
-             placement: 
+                placement: 
 
-                 constraints: 
+                    constraints: 
 
-                     - node.labels.ssd == true 
+                      - node.labels.ssd == true 
 
  
 
-#Modo de Serviço (service mode) 
+Modo de Serviço (service mode) 
 
 Pode ser visto no resultado do comando “docker service ls” (coluna “MODE”) 
 
@@ -312,22 +312,22 @@ Colocar uma tarefa em cada worker do swarm:
 
 Modo de serviços em arquivos stacks: 
 
-version: “3.1” 
+    version: “3.1” 
 
-services: 
+    services: 
 
-     web: 
+        web: 
 
-         image: nginx 
+            image: nginx 
 
-         deploy: 
+            deploy: 
 
-             mode: global 
+                mode: global 
 
  
 
 
-#Preferências de posicionamento de serviço 
+Preferências de posicionamento de serviço 
 
 “soft requirement”: se possível, suas preferências serão atendidas, mas não impedirão os containers de rodar, se o docker não conseguir atender suas preferências, ele irá colocar os serviços para rodar em outros nós 
 
@@ -367,27 +367,27 @@ docker service create --replicas 9 --name redis_2 --placement-pref ‘spread=nod
 
 Preferência de posicionamento em arquivos stacks: 
 
-version “3.1” 
+    version “3.1” 
 
-services:  
+    services:  
 
-    web: 
+        web: 
 
-        image:nginx 
+            image:nginx 
 
-        deploy: 
+            deploy: 
 
-            placement: 
+                placement: 
 
-                preferences: 
+                    preferences: 
 
-                    - spread: node.labels.zd 
-
- 
+                       - spread: node.labels.zd 
 
  
 
-#Disponibilidade de nós do swarm 
+ 
+
+Disponibilidade de nós do swarm 
 
 Você pode controlar o estado de cada nó, selecionando 1 entre 3 possíveis estados 
 
@@ -413,7 +413,7 @@ docker node update --availability drain node2
 
  
 
-#Requisitos de recursos 
+Requisitos de recursos 
 
 As opções de “service create” são diferentes das opções de “docker run” 
 
@@ -457,35 +457,35 @@ docker service update --limit-memory 0 --limit-cpu 0 myservice
 
 Requisitos de recursos em arquivos stacks 
 
-version “3.1” 
+    version “3.1” 
 
-services: 
+    services: 
 
-    database: 
+        database: 
 
-        image: mysql 
+            image: mysql 
 
-        deploy: 
+            deploy: 
 
-            resources: 
+                resources: 
 
-                limits: 
+                    limits: 
 
-                    cpus: ‘1’ 
+                        cpus: ‘1’ 
 
-                    memory: 1G 
+                        memory: 1G 
 
-                reservations: 
+                    reservations: 
 
-                    cpus: ‘0.5’ 
+                        cpus: ‘0.5’ 
 
-                    memory: 500M 
-
- 
+                        memory: 500M 
 
  
 
-#Testando atualizações de serviços 
+ 
+
+Testando atualizações de serviços 
 
 Httping: similar to “ping”, mas para requisições HTTP(S) 
 
@@ -503,7 +503,7 @@ Uma rede overlay só pode ser criada em um swarm
 
  
 
-#Lidando com falhas de atualização de serviços: rollbacks 
+Lidando com falhas de atualização de serviços: rollbacks 
 
  
 
@@ -531,9 +531,9 @@ Há uma única especificação anterior armazenada para cada serviço (“Previo
 
 Condições para execução automática do rollback 
 
-1 ) --update-failure-action rollback 
+  1 ) --update-failure-action rollback 
 
-2 ) --update-max-failure-ratio foi superado 
+  2 ) --update-max-failure-ratio foi superado 
 
 Comportamento padrão para falha de atualização: pausa 
 
@@ -553,51 +553,51 @@ Para utilizar rollback em arquivos de stacks, utilize a versão 3.7+
 
 Rollbacks em arquivo stacks: 
 
-version: “3.7” 
+    version: “3.7” 
 
-services: 
+    services: 
 
-    redis: 
+        redis: 
 
-        image: redis 
+            image: redis 
 
-    healthcheck: 
+        healthcheck: 
 
-        test: [“CMD”, “redis-healthcheck”] 
+            test: [“CMD”, “redis-healthcheck”] 
 
-        interval: 5s 
+            interval: 5s 
 
-        timeout: 3s 
+            timeout: 3s 
 
-        retries: 3 
+            retries: 3 
 
-        start_period: 60s 
+            start_period: 60s 
 
-    deploy: 
+        deploy: 
 
-        replicas: 1 
+            replicas: 1 
 
-        update_config: 
+            update_config: 
 
-            failure_action: rollback 
+                failure_action: rollback 
+
+       configs: 
+
+         - source: redis-healthcheck 
+
+           target: /usr/local/bin/redis-healthcheck 
+
+           mode: 0555 
+
+    network: 
+
+       - frontend  
 
     configs: 
 
-     - source: redis-healthcheck 
+         redis-healthcheck: 
 
-       target: /usr/local/bin/redis-healthcheck 
-
-       Mode: 0555 
-
-network: 
-
-     - frontend  
-
-configs: 
-
-    redis-healthcheck: 
-
-    file: ./redis-healthcheck 
+         file: ./redis-healthcheck 
 
  
 
